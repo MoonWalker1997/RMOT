@@ -31,6 +31,8 @@
                  |—————MOT17-04-DPM-4.txt
    ```
 
+3. Follow the instructions of adding the data of TrackEval-master.
+
 ## Tracking improvement/evaluations
 
 Go to the root directory `RMOT`, run the following code.
