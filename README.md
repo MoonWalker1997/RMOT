@@ -1,4 +1,12 @@
-# Usage
+# RMOT (not finished yet ⚠)
+
+## Fulfil requirements
+
+Run the following code.
+
+```bash
+$ pip install -r requirements.txt
+```
 
 ## Data preparation
 
