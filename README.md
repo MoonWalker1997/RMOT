@@ -39,7 +39,17 @@ $ pip install -r requirements.txt
                  |—————MOT17-04-DPM-4.txt
    ```
 
-3. Follow the instructions of adding the data of TrackEval-master.
+3. Download `data.zip` from https://github.com/JonathonLuiten/TrackEval/blob/master/docs/MOTChallenge-Official/Readme.md. Extract it and put in under the directory of `TrackEval-master`. It should be like.
+
+   ```
+   RMOT
+   |——————TrackEval-master
+          |——————data
+                 |—————gt
+                 |—————trackers
+   ```
+
+   
 
 ## Tracking improvement/evaluations
 
