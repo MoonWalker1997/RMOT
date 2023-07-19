@@ -319,6 +319,7 @@ if __name__ == "__main__":
 
     eval_config = {k: v for k, v in config.items() if k in default_eval_config.keys()}
     dataset_config = {k: v for k, v in config.items() if k in default_dataset_config.keys()}
+    dataset_config["TRACKERS_TO_EVAL"] = ["hAIMOT"]
     dataset_config["GT_FOLDER"] = "./TrackEval-master/data/gt/mot_challenge/"
     dataset_config["TRACKERS_FOLDER"] = "./TrackEval-master/data/trackers/mot_challenge/"
     dataset_config["SEQ_INFO"] = {args.video_name: None}
