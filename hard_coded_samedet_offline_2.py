@@ -209,7 +209,7 @@ if __name__ == "__main__":
 
             for i in range(len(tracking)):
 
-                if i in tracking_used:
+                if i in tracking_used or tracking[i][6] < args.box_score_thresh:
                     continue
 
                 # get the cleanness
