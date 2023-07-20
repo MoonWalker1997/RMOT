@@ -62,7 +62,7 @@ $ python3 hard_coded_samilardet_offline.py -v MOT17-04-DPM -vl 1050 -f 30 -e MOT
 If you just want to try a demo, just run the following code. It will use default arguments (the arguments shown above).
 
 ```bash
-$ python3 hard_coded_samedet_offline_2.py
+$ python3 hard_coded_samilardet_offline.py
 ```
 
 It you want to use your own arguments, please check the following description.
