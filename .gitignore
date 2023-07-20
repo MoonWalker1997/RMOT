@@ -1,6 +1,4 @@
 # Byte-compiled / optimized / DLL files
-./hard_coded_samedet_offline_2.py
-./hard_coded_samedet_offline_3.py
 __pycache__/
 *.py[cod]
 *$py.class

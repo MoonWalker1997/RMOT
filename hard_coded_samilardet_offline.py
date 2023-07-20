@@ -46,15 +46,12 @@ def make_parser():
                         help="the name of the txt and video you want to save")
     parser.add_argument("-it", "--iou-similarity-thresh", type=float, default=0.7,
                         help="the iou similarity threshold, from 0 to 1")
-    parser.add_argument("-clt", "--cleanness-lower-thresh", type=float, default=0.3,
-                        help="the lower bound to say whether a box is occluded, from 0 to 1")
     parser.add_argument("-its", "--iou-similarity-thresh-stricter", type=float, default=0.8,
                         help="the stricter iou similarity threshold, from 0 to 1")
     parser.add_argument("-at", "--appearance-similarity-thresh", type=float, default=0.6,
                         help="the appearance similarity threshold, from 0 to 1")
     parser.add_argument("-bt", "--box-score-thresh", type=float, default=0,
                         help="the box score threshold, from 0 to 1")
-
     return parser
 
 
@@ -64,7 +61,6 @@ if __name__ == "__main__":
 
     # max_lost_track_tolerance = 15  # > 0, integer
     iou_similarity_thresh = args.iou_similarity_thresh  # [0, 1]
-    cleanness_lower_thresh = args.cleanness_lower_thresh  # [0, 1]
     iou_similarity_thresh_stricter = args.iou_similarity_thresh_stricter  # [0, 1]
     appearance_similarity_thresh = args.appearance_similarity_thresh  # [0, 1]
     box_score_thresh = args.box_score_thresh  # [0, 1]
@@ -166,10 +162,12 @@ if __name__ == "__main__":
                             and iou_similarity[i, list(outside_tracks.keys()).index(ot_id)] \
                             > iou_similarity_thresh_stricter:
                         tracking_used.append(i)
+                        sim = compare_color_hist(hist_target, outside_tracks[ot_id].appearances)
                         outside_tracks[ot_id].to_update.append([tracking[i][2: 6],
                                                                 tracking[i][6],
                                                                 hist_target,
-                                                                max(0.1, cl)])
+                                                                max(0.1, cl),
+                                                                sim])
 
             # second, if the correspondence is wrong, to which outside track ID it should referhes
             for i in range(len(tracking)):
@@ -190,14 +188,14 @@ if __name__ == "__main__":
 
                 for j, each_track in enumerate(outside_tracks):
 
-                    if iou_similarity[i, j] > iou_similarity_thresh \
-                            and compare_color_hist(hist_target, outside_tracks[each_track].appearances) \
-                            > appearance_similarity_thresh:
+                    sim = compare_color_hist(hist_target, outside_tracks[each_track].appearances)
+                    if iou_similarity[i, j] > iou_similarity_thresh and sim > appearance_similarity_thresh:
                         tracking_used.append(i)
                         outside_tracks[each_track].to_update.append([tracking[i][2: 6],
                                                                      tracking[i][6],
                                                                      hist_target,
-                                                                     max(0.1, cl)])
+                                                                     max(0.1, cl),
+                                                                     sim])
                         break
 
             # third, for those external boxes with no matching, create them a new outside track
@@ -233,19 +231,19 @@ if __name__ == "__main__":
         for each in outside_tracks:
 
             if len(outside_tracks[each].to_update) != 0:
+
                 outside_tracks[each].to_update.sort(key=lambda x: x[1] * x[3])  # box score and appearance cleanness
-                d = outside_tracks[each].to_update[-1]
+                d = outside_tracks[each].to_update[-1][:-1]
+                sim = outside_tracks[each].to_update[-1][-1]
 
                 if not outside_tracks[each].initialized:
                     outside_tracks[each].initialize(*d)
                 else:
-                    if outside_tracks[each].life >= 0:
-                        if d[-1] > outside_tracks[each].appearance_score or d[-1] > 0.7:
-                            outside_tracks[each].update(*d)
-                        else:
-                            outside_tracks[each].update(tlwh=d[0], score=d[1])
+                    if sim > appearance_similarity_thresh \
+                            and (d[-1] > outside_tracks[each].appearance_score or d[-1] > 0.7):
+                        outside_tracks[each].update(*d)
                     else:
-                        outside_tracks[each].initialize(*d)
+                        outside_tracks[each].update(tlwh=d[0], score=d[1])
 
         # fps calc.
         time_e = time.time()
