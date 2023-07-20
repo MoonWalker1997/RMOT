@@ -56,7 +56,7 @@ $ pip install -r requirements.txt
 Go to the root directory `RMOT`, run the following code.
 
 ```bash
-$ python3 hard_coded_samilardet_offline.py -v MOT17-04-DPM -vl 1050 -f 30 -e MOT17-04-DPM-4 -e MOT17-04-DPM-4 -s res -it 0.7 -its 0.8 -at 0.6 -bt 0
+$ python3 hard_coded_samilardet_offline.py -v MOT17-04-DPM -vl 1050 -f 30 -e MOT17-04-DPM-4 -e MOT17-04-DPM-4 -s res -it 0.7 -its 0.8 -at 0.6 -bt 0 -mf 10
 ```
 
 If you just want to try a demo, just run the following code. It will use default arguments (the arguments shown above).
@@ -77,6 +77,7 @@ It you want to use your own arguments, please check the following description.
 -its | the stricter iou similarity threshold, from 0 to 1
 -at  | the appearance similarity threshold, from 0 to 1
 -bt  | the box score threshold, from 0 to 1
+-mf  | the outside track max life, > 0
 ```
 
 While running, you will see the progress of each frame and the fps of running.
