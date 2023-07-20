@@ -54,6 +54,8 @@ def make_parser():
                         help="the appearance similarity threshold, from 0 to 1")
     parser.add_argument("-bt", "--box-score-thresh", type=float, default=0,
                         help="the box score threshold, from 0 to 1")
+    parser.add_argument("-mf", "--ot-max-life", type=int, default=10,
+                        help="the max life of an outside track, larger than 0")
 
     return parser
 
@@ -68,6 +70,7 @@ if __name__ == "__main__":
     iou_similarity_thresh_stricter = args.iou_similarity_thresh_stricter  # [0, 1]
     appearance_similarity_thresh = args.appearance_similarity_thresh  # [0, 1]
     box_score_thresh = args.box_score_thresh  # [0, 1]
+    ot_max_life = args.ot_max_life  # > 0
 
     # read external tracker results and images
 
@@ -221,11 +224,13 @@ if __name__ == "__main__":
                     hist_target = generate_color_hist(img_patch(tlbr_tracking[i], img))
                     hists_target[i] = hist_target
 
-                outside_tracks.update({outside_track_ID: outside_track(ID=outside_track_ID,
-                                                                       tlwh=tracking[i][2:6],
-                                                                       score=tracking[i][6],
-                                                                       appearances=hist_target,
-                                                                       appearance_score=max(0.1, cl))})
+                ot = outside_track(ID=outside_track_ID,
+                                   tlwh=tracking[i][2:6],
+                                   score=tracking[i][6],
+                                   appearances=hist_target,
+                                   appearance_score=max(0.1, cl))
+                ot.max_life = ot_max_life
+                outside_tracks.update({outside_track_ID: ot})
                 external_trackers[each_external_tracker].correspondence.update({tracking[i][1]: [outside_track_ID, 1]})
                 outside_track_ID += 1
 
