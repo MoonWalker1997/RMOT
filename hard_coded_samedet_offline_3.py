@@ -195,6 +195,7 @@ if __name__ == "__main__":
                                                                      tracking[i][6],
                                                                      hist_target,
                                                                      max(0.1, cl)])
+                        break
 
             # third, find the similar matches
             for i in range(len(tracking)):
@@ -223,6 +224,7 @@ if __name__ == "__main__":
                                                                      tracking[i][6],
                                                                      hist_target,
                                                                      max(0.1, cl)])
+                        break
 
             # Fourth, for those external boxes with no matching, create them a new outside track
 
