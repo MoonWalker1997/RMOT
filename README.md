@@ -56,7 +56,7 @@ $ pip install -r requirements.txt
 Go to the root directory `RMOT`, run the following code.
 
 ```bash
-$ python3 hard_coded_samedet_offline_2.py -v MOT17-04-DPM -vl 1050 -f 30 -e MOT17-04-DPM-4 -e MOT17-04-DPM-4 -s res -it 0.7 -clt 0.3 -its 0.8 -at 0.6 -bt 0
+$ python3 hard_coded_samilardet_offline.py -v MOT17-04-DPM -vl 1050 -f 30 -e MOT17-04-DPM-4 -e MOT17-04-DPM-4 -s res -it 0.7 -clt 0.3 -its 0.8 -at 0.6 -bt 0
 ```
 
 If you just want to try a demo, just run the following code. It will use default arguments (the arguments shown above).
