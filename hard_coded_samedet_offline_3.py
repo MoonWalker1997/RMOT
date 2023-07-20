@@ -141,7 +141,7 @@ if __name__ == "__main__":
             # that's why this method can have the same "DetA" as the original tracker, since the boxes are 100% kept
 
             # first, find those certain (close in IoU distance and similar in appearance) matches
-            tracking_used = []
+            tracking_used = set()
 
             for i in range(len(tracking)):
 
@@ -164,12 +164,11 @@ if __name__ == "__main__":
                     if iou_similarity[i, j] > iou_similarity_thresh:
                         if compare_color_hist(hist_target, outside_tracks[each_track].appearances) \
                                 > appearance_similarity_thresh:
-                            tracking_used.append(i)
+                            tracking_used.add(i)
                             outside_tracks[each_track].to_update.append([tracking[i][2: 6],
                                                                          tracking[i][6],
                                                                          hist_target,
                                                                          max(0.1, cl)])
-                            break
 
             # second, find those occluded (track pred and box have a high IoU, but the cleanness is low) matches
             for i in range(len(tracking)):
@@ -191,14 +190,41 @@ if __name__ == "__main__":
                 for j, each_track in enumerate(outside_tracks):
 
                     if iou_similarity[i, j] > iou_similarity_thresh_stricter and cl < cleanness_lower_thresh:
-                        tracking_used.append(i)
+                        tracking_used.add(i)
                         outside_tracks[each_track].to_update.append([tracking[i][2: 6],
                                                                      tracking[i][6],
                                                                      hist_target,
                                                                      max(0.1, cl)])
-                        break
 
-            # third, for those external boxes with no matching, create them a new outside track
+            # third, find the similar matches
+            for i in range(len(tracking)):
+
+                # get the cleanness
+                if cls[i] is not None:
+                    cl = cls[i]
+                else:
+                    cl = cleanness(tlbr_tracking[i], tlbr_tracking, inter_iou_similarity, i, img)
+                    cls[i] = cl
+
+                # get the appearance model
+                if hists_target[i] is not None:
+                    hist_target = hists_target[i]
+                else:
+                    hist_target = generate_color_hist(img_patch(tlbr_tracking[i], img))
+                    hists_target[i] = hist_target
+
+                for j, each_track in enumerate(outside_tracks):
+
+                    if iou_similarity[i, j] > iou_similarity_thresh \
+                            and compare_color_hist(hist_target, outside_tracks[each_track].appearances) \
+                            > appearance_similarity_thresh:
+                        tracking_used.add(i)
+                        outside_tracks[each_track].to_update.append([tracking[i][2: 6],
+                                                                     tracking[i][6],
+                                                                     hist_target,
+                                                                     max(0.1, cl)])
+
+            # Fourth, for those external boxes with no matching, create them a new outside track
 
             for i in range(len(tracking)):
 
