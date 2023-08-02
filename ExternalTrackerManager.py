@@ -5,7 +5,7 @@ Read the MOT result (as a txt file) and return the tracking of one each frame.
 
 class external_tracker_manager:
 
-    def __init__(self, path, video_length):
+    def __init__(self, path, video_length, gt = False):
         self.frame = 1
         self.index = 0
         self.length = video_length
@@ -13,13 +13,20 @@ class external_tracker_manager:
             self.data = file.readlines()
         self.correspondence = {}  # format: {tracker ID: [outside_track ID, count]}
 
+        self.gt = gt
+        if gt:
+            self.data.sort(key=lambda x: int(x.split(",")[0]))
+
     def next_frame(self):
         if self.frame > self.length:
             return None
         ret = []
         for i in range(self.index, len(self.data)):
             if int(self.data[i].split(",")[0]) == self.frame:
-                ret.append([float(each) for each in self.data[i].strip("\n").split(",")])
+                if self.gt and int(self.data[i].split(",")[-2]) != 1:
+                    continue
+                else:
+                    ret.append([float(each) for each in self.data[i].strip("\n").split(",")])
             else:
                 self.index = i
                 self.frame += 1
